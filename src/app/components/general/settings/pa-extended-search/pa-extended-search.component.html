@@ -1,0 +1,94 @@
+<nz-modal [nzVisible]="show"
+          [nzWrapClassName]="'pa-extended-search'"
+          [nzOkText]="selectedOrganization ? 'Выбрать' : null"
+          [nzCancelText]="'Закрыть'"
+          [nzTitle]="'Выбор лицевого счета'"
+          [nzWidth]="'xxx'"
+          [nzMaskClosable]="false"
+          nzBordered
+          (nzOnCancel)="close()"
+          (nzOnOk)="confirm()"
+>
+  <div class="pa-extended-search__container">
+    <nz-form-item class="pa-extended-search__search">
+      <nz-form-control>
+        <nz-input-group [nzSuffix]="suffixIconSearch">
+          <input #searchInput
+                 nz-input
+                 type="text"
+                 placeholder="Введите ЛС, наименование, ИНН, КПП или код ораганизации по СР"
+                 name="paExtendSearch"
+          >
+          <ng-template #suffixIconSearch>
+            <i class="anticon anticon-search"></i>
+          </ng-template>
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+
+    <div class="pa-extended-search__head">
+      <nz-table #tableComponent
+                [nzData]="[{}]"
+                [nzSize]="'middle'"
+                [nzWidthConfig]="widthConfig"
+                [nzShowPagination]="false"
+      >
+        <thead>
+          <tr>
+            <th></th>
+            <th>Лицевой счет</th>
+            <th>Бюджет</th>
+            <th>Наименование организации</th>
+            <th>ИНН</th>
+            <th>КПП</th>
+            <th>Код организации по СР/Код клиента</th>
+          </tr>
+        </thead>
+      </nz-table>
+    </div>
+
+    <perfect-scrollbar class="pa-extended-search__body"
+                       [config]="{suppressScrollX: true}"
+                       [scrollIndicators]="true"
+    >
+      <nz-table #tableComponent
+                [nzData]="organizations$ | async | sortOrganizations : preSelectedOrganization"
+                [nzSize]="'middle'"
+                [nzShowPagination]="false"
+                [nzFrontPagination]="false"
+                [nzWidthConfig]="widthConfig"
+      >
+        <tbody>
+          <tr *ngFor="let row of tableComponent.data | slice : paginationStart : paginationEnd"
+              [ngClass]="{_selected: row === preSelectedOrganization}"
+              (click)="select(row)"
+          >
+            <td nzShowCheckbox
+                [nzChecked]="row === selectedOrganization"
+                (nzCheckedChange)="select(row)"
+                (click)="$event.stopPropagation()"
+            >
+            </td>
+            <td>{{row.key | split : '-': true : 0 | transformTableValue : 'string' :'-'}}</td>
+            <td>{{row.key | split : '-': true : 1 | transformTableValue: 'string' :'-'}}</td>
+            <td>{{row.orgName | transformTableValue: '' :'-'}}</td>
+            <td>{{row.inn | transformTableValue: 'string' :'-'}}</td>
+            <td>{{row.kpp | transformTableValue: 'string' :'-'}}</td>
+            <td>{{row.okpo | transformTableValue: 'string' :'-'}}</td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </perfect-scrollbar>
+
+    <div class="pa-extended-search__footer">
+      <nz-pagination [(nzPageIndex)]="pagination.index"
+                     [(nzPageSize)]="pagination.size"
+                     [nzPageSizeOptions]="pagination.sizeOptions"
+                     [nzTotal]="tableComponent.data | length"
+                     [nzSize]="'small'"
+                     [nzShowSizeChanger]="true"
+      >
+      </nz-pagination>
+    </div>
+  </div>
+</nz-modal>

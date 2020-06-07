@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>PurksDataMart</title>
+  <base href="/purks">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+  <app-root></app-root>
+
+  <script th:inline="javascript">
+  /*<![CDATA[*/
+    ( function( global ) {
+      'use strict';
+
+      Object.defineProperty( global, '$config', {
+        value: {
+          global: {
+            documentUrl: '/udu-webcenter/faces/oracle/webcenter/portalapp/pages/ufosEditDocument.jspx',
+            portalUrl: 'http://eb-fam-test-sso.otr.ru:7777/',
+            modes: [
+              {key: 'common', title: 'Общий отчет'},
+              {key: 'letterOfCredit', title: 'Аккредитив'}
+            ]
+          },
+          path: {
+            'root': /*[[${ pathHelper.get().concatAndNormalizePath('/') }]]*/ '/',
+            'reports': {
+              'report' : {
+                'common': {
+                  'excel': 'assets/reports/'
+                },
+                'letterOfCredit': {
+                  'excel': 'assets/reports/'
+                }
+              },
+             'documents': {
+                'common': {
+                  'excel': 'assets/reports/'
+                },
+                'letterOfCredit': {
+                  'excel': 'assets/reports/'
+                }
+              }
+            }
+          },
+          rest: {
+            'PA': 'http://localhost:3000/accessible-data/getPersonalAccounts',
+            'common':  'http://localhost:3000/accessible-data/getCommonData',
+            'commonDetailedData': 'http://localhost:3000/accessible-data/getCommonDetailedData',
+            'letterOfCreditData':  'http://localhost:3000/accessible-data/getCommonData',
+            'letterOfCreditDetailedData': 'http://localhost:3000/accessible-data/getCommonDetailedData',
+
+            'export': 'http://localhost:3000/accessible-data/getReportData',
+            'hasUpdate':  'http://localhost:3000/accessible-data/isNewDataExist',
+
+            report:  {
+              common: 'http://localhost:3000/accessible-data/getCommonData',
+              letterOfCredit: 'http://localhost:3000/accessible-data/getLetterOfCreditData',
+            },
+            documents: {
+              common: 'http://localhost:3000/accessible-data/getCommonDetailedData',
+              letterOfCredit: 'http://localhost:3000/accessible-data/getLetterOfCreditDetailedData',
+            },
+            'getAppVersion': 'http://localhost:3000/accessible-data/getAppVersion'
+          }
+        }
+      });
+    } )( typeof window !== "undefined" ? window : this );
+  /*]]>*/
+  </script>
+</body>
+</html>

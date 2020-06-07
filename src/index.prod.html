@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Нерегламентированный отчет</title>
+    <base href="/" th:attr="href=${pathHelper.get().concatAndNormalizePath('/pages/main/')}">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico"
+          th:href="@{ ${localResourceResolver.apply('/static/favicon.ico') } }"
+    />
+
+  </head>
+
+  <body>
+    <app-root></app-root>
+
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+      ( function( global ) {
+        'use strict';
+
+        Object.defineProperty( global, '$config', {
+          value: {
+            global: {
+              dicts: [ 'PA', 'DOC_L_REG_NUM' ]
+            },
+            path: {
+              'root': /*[[${ pathHelper.get().concatAndNormalizePath('/') }]]*/ '/',
+              'reports': {
+                'report' : {
+                  'common': {
+                    'excel': /*[[${ localResourceResolver.apply('/reports/addhoc-report-common.jrxml') } ]]*/ '/static/reports/addhoc-report-common.jrxml'
+                  },
+                  'letterOfCredit': {
+                    'excel': /*[[${ localResourceResolver.apply('/reports/addhoc-report-letterOfCredit.jrxml') } ]]*/ '/static/reports/addhoc-report-letterOfCredit.jrxml'
+                  }
+                },
+                'documents': {
+                  'common': {
+                    'excel': /*[[${ localResourceResolver.apply('/reports/addhoc-report-common-documents.jrxml') } ]]*/ '/static/reports/addhoc-report-common-documents.jrxml'
+                  },
+                  'letterOfCredit': {
+                    'excel': /*[[${ localResourceResolver.apply('/reports/addhoc-report-letterOfCredit-documents.jrxml') } ]]*/ '/static/reports/addhoc-report-letterOfCredit-documents.jrxml'
+                  }
+                }
+              }
+            },
+            rest: {
+              'PA': /*[[${ pathHelper.get().concatAndNormalizePath('/accessible-data/getPersonalAccounts') }]]*/ '',
+              'hasUpdate': /*[[${ pathHelper.get().concatAndNormalizePath('/accessible-data/isNewDataExist') }]]*/ '/accessible-data/isNewDataExist',
+              'export': /*[[${ pathHelper.get().concatAndNormalizePath('/accessible-data/getReportData') }]]*/ '/accessible-data/getReportData',
+
+              'report':  {
+                'common': /*[[${ pathHelper.get().concatAndNormalizePath('/accessible-data/getCommonData') }]]*/ '/accessible-data/getCommonData',
+                'letterOfCredit': /*[[${ pathHelper.get().concatAndNormalizePath('/accessible-data/getLetterOfCreditData') }]]*/ '/accessible-data/getLetterOfCreditData',
+              },
+              'documents': {
+                'common': /*[[${ pathHelper.get().concatAndNormalizePath('/accessible-data/getCommonDetailedData') }]]*/ '/accessible-data/getCommonDetailedData',
+                'letterOfCredit': /*[[${ pathHelper.get().concatAndNormalizePath('/accessible-data/getLetterOfCreditDetailedData') }]]*/ '/accessible-data/getLetterOfCreditDetailedData',
+              },
+
+
+              'commonData': /*[[${ pathHelper.get().concatAndNormalizePath('/accessible-data/getCommonData') }]]*/ '/accessible-data/getCommonData',
+              'commonDetailedData': /*[[${ pathHelper.get().concatAndNormalizePath('/accessible-data/getCommonDetailedData') }]]*/ '/accessible-data/getCommonDetailedData'
+            }
+          }
+        });
+      } )( typeof window !== "undefined" ? window : this );
+    /*]]>*/
+    </script>
+  </body>
+</html>

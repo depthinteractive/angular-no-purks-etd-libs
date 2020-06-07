@@ -1,0 +1,119 @@
+<div class="app-details">
+  <nz-modal [nzVisible]="(details$ | async) && (details$ | async)['visible']"
+            nzTitle="Документы"
+            [nzFooter]="detailsFooter"
+            (nzOnCancel)="closeDetails()"
+            [nzWrapClassName]="'_details ' + ((details$ | async)['data'].length <= 6 ? '_centred' : '')"
+            [nzWidth]="'xxx'"
+            nzBordered
+  >
+    <nz-spin [nzSpinning]="(details$ | async)['loading']"
+             [ngStyle]="{width: '100%', 'min-height': '150px'}"
+    >
+      <div *ngIf="(details$ | async)?.data.length === 0"
+           class="app-details__empty"
+      >
+        <span *ngIf="!(details$ | async)['loading']">
+          Увы, нет документов соответствующих выбранным критериям
+        </span>
+      </div>
+      <div nz-row
+           *ngIf="(details$ | async)?.data.length > 0"
+           [nzGutter]="24"
+      >
+        <div nz-col
+             [nzSpan]="(parameters$ | async) !== null ? 18 : 24"
+        >
+          <nz-table #detailsTable
+                    [nzLoading]="(details$ | async)['loading'] && false"
+                    [nzData]="(details$ | async)['data']"
+                    [nzSize]="'middle'"
+                    [nzWidthConfig]="(widthConfig$ | async)"
+          >
+            <thead>
+              <tr>
+                <th>№ п/п</th>
+
+                <th *ngFor="let column of (columns$ | async)">
+                  {{column.title}}
+                </th>
+
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let row of detailsTable.data; let rowIndex = index;">
+                <td>{{rowIndex + 1}}</td>
+                <td *ngFor="let column of (columns$ | async)">
+                  {{row[column.key] | rendererTableValue: column.key: row | transformTableValue: column.type || 'string' : '-' }}
+                </td>
+
+                <td>
+                  <button nz-button
+                          nzType="default"
+                          nzShape="circle"
+                          nz-tooltip
+                          [nzTitle]="'Открыть документ'"
+                          [ngStyle]="{border: 0}"
+                          (click)="openDocument(row)"
+                  >
+                    <i class="anticon anticon-file-text">
+                    </i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+
+        <div nz-col
+             [nzSpan]="(parameters$ | async) !== null ? 6 : 0"
+        >
+          <form nz-form
+                [nzLayout]="'vertical'"
+                *ngIf="(details$ | async)['data'].length > 0"
+                class="app-details__parameters"
+          >
+            <nz-form-item *ngFor="let parameter of (parameters$ | async)"
+                          [ngStyle]="{'margin-bottom': '12px'}"
+            >
+              <nz-form-label [ngStyle]="{'font-weight': 500}">
+                {{parameter.title}}
+              </nz-form-label>
+
+              <nz-form-control>
+                <ng-container >
+                  {{(details$ | async)?.data[0][parameter.key] | transformTableValue: 'string' : '-'}}
+                </ng-container>
+              </nz-form-control>
+            </nz-form-item>
+          </form>
+
+        </div>
+
+    </div>
+    </nz-spin>
+
+    <ng-template #detailsFooter>
+      <button nz-button
+              nzType="default"
+              (click)="exportToExcel()"
+              class="app-buttons__button"
+              [disabled]="(details$ | async)?.data.length === 0 ? true : null"
+        >
+        <i class="anticon anticon-file-excel">
+        </i>
+        Экспорт в Excel
+      </button>
+
+      <button nz-button
+              nzType="primary"
+              (click)="closeDetails()"
+              [nzLoading]="false"
+      >
+        Закрыть
+      </button>
+    </ng-template>
+  </nz-modal>
+</div>

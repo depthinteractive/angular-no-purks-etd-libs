@@ -1,0 +1,25 @@
+<div nz-row
+     class="app-workspace"
+     id="workspace"
+     [class._collapsed]="settingsCollapse$ | async"
+>
+	<div nz-col
+       class="app-workspace__table"
+       [class._expanded]="settingsCollapse$ | async"
+  >
+		<app-table></app-table>
+	</div>
+
+	<div
+    nz-col
+    class="app-workspace__paramemeters"
+    [class._collapsed]="settingsCollapse$ | async"
+  >
+    <perfect-scrollbar>
+      <div class="app-workspace__paramemeters-scroll">
+        <app-settings></app-settings>
+      </div>
+
+    </perfect-scrollbar>
+	</div>
+</div>

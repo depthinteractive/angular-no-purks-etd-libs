@@ -1,0 +1,46 @@
+.app-layout{
+	background: #fff;
+	height: 100%;
+	width: 100%;
+
+	&__header {
+		background: #ffffff;
+    border-bottom: 1px solid #ebedf0;
+		/*box-shadow: 0 0 12px 5px rgba(0,0,0,.05);*/
+    height: 40px;
+		left: 0;
+		padding: 0 32px;
+		position: fixed;
+		top: 0;
+    width: 100%;
+		z-index: 20;
+
+		&-shadow {
+			background: #fff;
+			background: linear-gradient(to bottom, #fff 33%, transparent);
+			height: 32px;
+			left: 0;
+			position: fixed;
+			top: 64px;
+			width: 100%;
+			z-index: 10;
+      max-height: 0;
+		}
+	}
+
+	&__content {
+		height: 100%;
+
+		&-shadow {
+			background: #fff;
+			background: linear-gradient(to top, #fff 33%, transparent);
+			bottom: 0;
+			height: 32px;
+			left: 0;
+			position: fixed;
+			width: 100%;
+			z-index: 10;
+      max-height: 0;
+		}
+	}
+}

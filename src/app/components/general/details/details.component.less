@@ -1,0 +1,37 @@
+.app-details {
+  &__empty {
+    color: #999;
+    font-size: 18px;
+    padding: 16px 0;
+    text-align: center;
+  }
+  &__parameters {
+    border: 1px solid #ebedf0;
+    border-radius: 4px;
+    padding: 16px 16px 0 0;
+
+    & /deep/ .ant-table-wrapper {
+      margin-bottom: 32px;
+    }
+  }
+  tr {
+    cursor: pointer;
+  }
+  & ._text-right {
+    text-align: right;
+  }
+}
+
+/deep/ .ant-modal-wrap._details {
+  /deep/ &._centred {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
+
+  /deep/ & .ant-modal {
+    min-width: 728px;
+    top: 5%;
+    width: 90%;
+  }
+}

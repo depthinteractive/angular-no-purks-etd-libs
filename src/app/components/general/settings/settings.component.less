@@ -1,0 +1,196 @@
+@import "../../../../variables.less";
+
+@settings-cls-prefix: app-general-settings;
+
+.@{settings-cls-prefix} {
+  height: auto;
+  margin-right: -16px;
+  padding: 8px 16px 0 0;
+
+  &__section {
+    border-radius: 0 0 2px 2px;
+    border-top: 1px solid #ebedf0;
+    font-size: 14px;
+    position: relative;
+    padding: 16px 0;
+    width: 100%;
+
+    &._parmeters {
+      border: 1px solid #1890ff;
+      border-radius: 4px;
+      margin-bottom: 24px;
+      padding: 16px;
+    }
+
+    &-title {
+      background: #fff;
+      border-radius: 2px 2px 0 0;
+      color: #314659;
+      font-size: 14px;
+      font-weight: 500;
+      left: 24px;
+      margin-left: -8px;
+      padding: 1px 8px;
+      top: -14px;
+      position: absolute;
+
+      -webkit-transition: background-color 0.4s;
+      transition: background-color 0.4s;
+    }
+
+    &:last-child {
+      padding-bottom: 0;
+
+      & /deep/ .ant-form-item {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  &__parameter {
+    margin-bottom: 4px;
+    overflow-y: hidden;
+
+    &._tree-indicators {
+      height: auto;
+      max-height: 240px;
+
+      & /deep/ .ps__rail-y {
+        opacity: .33;
+      }
+    }
+
+    &-label {
+      display: inline-block;
+      max-width: 100%;
+      width: auto;
+
+      &._help {
+        &,
+        /deep/ & label {
+          cursor: help;
+        }
+      }
+    }
+
+    &-scroll {
+      max-height: @max-height-parameter-scroll;
+
+      &-container {
+        padding-right: @padding-l;
+      }
+    }
+  }
+
+  &__field {
+
+    &._date {
+      width: 100%;
+
+      & /deep/ .ant-calendar-picker {
+        width: 100%;
+      }
+    }
+  }
+
+  &__list {
+    /deep/ & .ant-tree-switcher,
+    /deep/ & .ant-tree-child-tree {
+      display: none !important;
+    }
+
+    /deep/ &--add {
+      padding-left: 11px;
+    }
+
+    & &-item {
+      /deep/ &.ant-tree-node-content-wrapper {
+        height: 36px;
+        line-height: 36px;
+        padding: 0;
+        width: 100%;
+
+        &:hover {
+          background: none;
+        }
+
+        /deep/ & .ant-tree-node-content {
+          border: 1px dashed #bfbfbf;
+          border-radius: 4px;
+          display: block;
+          height: 32px;
+          line-height: 30px;
+          overflow: hidden;
+          padding-left: 11px;
+          padding-right: 32px;
+          position: relative;
+          text-overflow: ellipsis;
+
+          &:hover {
+            background-color: #e6f7ff;
+            border-color: #40a9ff;
+            cursor: move;
+          }
+        }
+
+        &._empty,
+        &._empty:hover {
+          background: transparent;
+          font-style: italic;
+        }
+      }
+
+      &--delete {
+        padding: 0 4px;
+        position: absolute;
+        right: 4px;
+        top: 3px;
+
+        &:not(:hover) {
+          background: transparent;
+          border-color: transparent;
+        }
+      }
+    }
+  }
+
+  /deep/ & .ant-skeleton {
+    display: block;
+
+    &-content .ant-skeleton-title {
+      margin-top: 8px;
+    }
+
+    &-header.ng-star-inserted {
+      padding: 0;
+    }
+  }
+
+  & /deep/ .ant-form-item-label {
+    overflow: hidden;
+    padding-bottom: 4px;
+    text-overflow: ellipsis;
+
+    & .anticon {
+      display: none;
+      font-size: 13px;
+      position: relative;
+      top: 3px;
+    }
+  }
+
+  & /deep/ .ant-form-item-children {
+    &::after {
+      right: 4px;
+    }
+  }
+
+  & ._tree-indicators /deep/ .ant-tree-node-content-wrapper {
+    height: auto;
+    line-height: 16px;
+    min-height: 24px;
+    padding-top: 4px;
+    max-width: calc(100% - 48px);
+    white-space: normal;
+  }
+}

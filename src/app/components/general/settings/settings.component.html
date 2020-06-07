@@ -1,0 +1,283 @@
+<nz-spin [nzSpinning]="(appModeLoading$ | async)">
+  <form nz-form
+        [nzLayout]="'vertical'"
+        class="app-general-settings"
+  >
+    <section class="app-general-settings__section _parmeters">
+        <span class="app-general-settings__section-title">
+          Параметры отчета
+        </span>
+
+      <div class="app-general-settings__section-body">
+        <ng-container *ngTemplateOutlet="t_section_parameters"></ng-container>
+      </div>
+    </section>
+
+    <section class="app-general-settings__section">
+        <span class="app-general-settings__section-title">
+          Показатели отчета
+        </span>
+
+      <div class="app-general-settings__section-body">
+        <nz-form-item class="app-general-settings__parameter _tree-indicators">
+          <perfect-scrollbar class="app-general-settings__parameter-scroll">
+            <div class="app-general-settings__parameter-scroll-container">
+              <nz-tree [nzData]="(dicts$ | async)?.indicators"
+                       [nzCheckedKeys]="indicators$ | async"
+                       [nzCheckable]="true"
+                       [nzMultiple]="true"
+                       (nzCheckBoxChange)="onChange('indicators', $event )"
+                       [nzDraggable]="false"
+                       (nzOnDrop)="onDrop($event)"
+                       name="indicators"
+              >
+              </nz-tree>
+            </div>
+          </perfect-scrollbar>
+        </nz-form-item>
+      </div>
+    </section>
+
+    <section class="app-general-settings__section">
+        <span class="app-general-settings__section-title">
+          Фильтры
+        </span>
+
+      <div class="app-general-settings__section-body">
+        <nz-form-item *ngFor="let filter of (filtersList$ | async);"
+                      class="app-general-settings__parameter"
+        >
+          <nz-form-label [nzSpan]="null"
+                         [nzFor]="'filter'"
+                         nz-tooltip
+                         [nzTitle]="filtersFieldsMeta[filter].title || filtersFieldsMeta[filter].label"
+                         [nzPlacement]="'topLeft'"
+                         class="app-general-settings__parameter-label"
+          >
+            {{filtersFieldsMeta[filter].label}}
+          </nz-form-label>
+
+          <nz-form-control [nzSpan]="null">
+            <nz-select nzShowSearch
+                       nzAllowClear
+                       [id]="filter"
+                       [name]="filter"
+                       [nzMode]="'multiple'"
+                       [nzPlaceHolder]="filtersFieldsMeta[filter].placeholder"
+                       [ngModel]="(filters$ | async)[filter]"
+                       (ngModelChange)="onChange('filter', $event, filter)"
+            >
+              <nz-option *ngFor="let obigation of (dicts$ | async)[filter]"
+                         [nzLabel]="obigation['title']"
+                         [nzValue]="obigation['key']"
+              >
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </section>
+
+    <section *ngIf="(appMode$ | async) === 'common'"
+             class="app-general-settings__section"
+    >
+        <span class="app-general-settings__section-title">
+          Группировка
+        </span>
+
+      <div class="app-general-settings__section-body">
+        <nz-form-item>
+          <div class="app-general-settings__list" *ngIf="(groupment$ | async)?.length == 0">
+            <span class="ant-tree-node-content-wrapper app-general-settings__list-item _empty">
+              {{'Группировка строка не задана'}}
+            </span>
+          </div>
+          <nz-skeleton [nzActive]="true"
+                       [nzParagraph]="false"
+                       [nzLoading]="loadingParameters"
+                       class="app-general-settings__skeleton"
+          >
+            <nz-tree [nzData]="(groupment$ | async) || []"
+                     nzDraggable="true"
+                     #treeCom
+                     class="app-general-settings__list"
+                     [nzBeforeDrop]="beforeDropGroup"
+                     (nzOnDragStart)="dragStartGroup( $event )"
+                     *ngIf="(groupment$ | async)?.length > 0"
+            >
+              <ng-template #nzTreeTemplate let-node let-index>
+                    <span
+                      class="ant-tree-node-content-wrapper draggable ng-star-inserted app-general-settings__list-item"
+                      draggable="true"
+                      aria-grabbed="true"
+                      *ngIf="node.key != '_empty_'"
+                    >
+                      <span class="ant-tree-node-content app-general-settings__list-title">
+                      {{node.title}}
+                        <button nz-button
+                                [nzSize]="'small'"
+                                nzType="danger"
+                                class="app-general-settings__list-item--delete"
+                                (click)="onChange( 'groupment', node.key, 'remove')"
+                                title="Удалить группу"
+                                *ngIf="(groupment$ | async)?.length> 1"
+                        >
+                          <i class="anticon anticon-delete">
+                          </i>
+                        </button>
+                      </span>
+                    </span>
+              </ng-template>
+            </nz-tree>
+
+
+            <nz-dropdown class="app-general-settings__list--add"
+                         *ngIf="(groupment$ | async)?.length != (dicts$ | async)?.groups.length"
+            >
+              <a nz-dropdown>
+                Добавить группу
+                <i class="anticon anticon-down">
+                </i>
+              </a>
+
+              <ul nz-menu>
+                <ng-container *ngFor="let group of (dicts$ | async)?.groups">
+                  <li nz-menu-item
+                      *ngIf="!group.prop.used && group.key !== 'subsidary_target_enlarged'"
+                      (click)="onChange('groupment', group, 'add')"
+                  >
+                    {{group.title}}
+                  </li>
+                </ng-container>
+              </ul>
+            </nz-dropdown>
+          </nz-skeleton>
+        </nz-form-item>
+      </div>
+    </section>
+  </form>
+</nz-spin>
+
+
+<!-- parameters section -->
+<ng-template #t_section_parameters>
+  <nz-form-item class="app-general-settings__parameter">
+    <nz-form-label nzFor="pDate">Отчетная дата</nz-form-label>
+
+    <nz-form-control>
+      <nz-date-picker [ngModel]="(parameters$ | async)?.pDate"
+                      name="pDate"
+                      class="app-general-settings__field _date"
+                      nzPlaceHolder="Выберите дату"
+                      [nzFormat]="'dd.MM.yyyy'"
+                      (ngModelChange)="onChange( 'pDate', $event )"
+                      [nzAllowClear]="false"
+                      [disabled]="paLoadingStatus || null"
+      >
+      </nz-date-picker>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item class="app-general-settings__parameter">
+    <nz-form-label nzFor="pAccountWithPBudget">
+      Лицевой счёт
+    </nz-form-label>
+
+    <nz-form-control nz-tooltip
+                     [nzTitle]="selectedOrganization?.orgName || 'Выберите лицевой счет'"
+                     [nzPlacement]="'topLeft'"
+    >
+      <nz-input-group nzSearch [nzSuffix]="pAccountSuffixBtnTpl">
+        <nz-select nzPlaceHolder="Выберите лицевой счёт"
+                   [nzShowSearch]="true"
+                   [ngModel]="(parameters$ | async)?.pAccountWithPBudget"
+                   (ngModelChange)="onChange('pAccountWithPBudget', $event)"
+                   [nzDisabled]="!!paLoadingStatus"
+                   name="pAccountWithPBudget"
+                   style="width: calc(100% - 32px)"
+        >
+          <nz-option *ngFor="let PA of (dicts$ | async).pAccountWithPBudget"
+                     nzLabel="{{PA.title || PA.key}}"
+                     nzValue="{{PA.key}}"
+          >
+          </nz-option>
+        </nz-select>
+
+        <ng-template #pAccountSuffixBtnTpl>
+          <button nz-button
+                  nzType="default"
+                  nzSearch
+                  nz-tooltip
+                  [nzTitle]="'Расширенный поиск'"
+                  [nzPlacement]="'top'"
+                  [disabled]="!!paLoadingStatus"
+                  (click)="showPaExtendedSearch()"
+          >
+            <i class="anticon anticon-ellipsis"></i>
+          </button>
+        </ng-template>
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item class="app-general-settings__parameter">
+    <nz-form-label nzFor="exclClosedBYear"
+                   nz-tooltip
+                   [nzTitle]="'Исключить закрытые на начало года разделы'"
+                   class="app-general-settings__parameter-label _help"
+    >
+      Исключить закрытые на начало года разделы
+    </nz-form-label>
+
+    <nz-form-control>
+      <nz-switch [ngModel]="(parameters$ | async)?.exclClosedBYear"
+                 nzCheckedChildren="Да"
+                 nzUnCheckedChildren="Нет"
+                 name="exclClosedBYear"
+                 (ngModelChange)="onChange('exclClosedBYear', $event)"
+      >
+      </nz-switch>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item class="app-general-settings__parameter">
+    <nz-form-label nzFor="exclProcessedBYear"
+                   nz-tooltip
+                   [nzTitle]="'Исключить КОО, отозванные, исполненные, переведенные в архив на начало года'"
+                   class="app-general-settings__parameter-label _help"
+    >
+      Исключить КОО, отозванные, исполненные, переведенные в архив на начало года
+    </nz-form-label>
+
+    <nz-form-control>
+      <nz-switch [ngModel]="(parameters$ | async)?.exclProcessedBYear"
+                 nzCheckedChildren="Да"
+                 nzUnCheckedChildren="Нет"
+                 name="exclProcessedBYear"
+                 (ngModelChange)="onChange('exclProcessedBYear', $event)"
+      >
+      </nz-switch>
+    </nz-form-control>
+  </nz-form-item>
+
+  <div class="app-general-settings__section-body">
+    <button nz-button
+            nzType="primary"
+            nzBlock
+            [disabled]="!(parameters$ | async)?.buttonEnable || !(parameters$ | async).pAccount"
+            [nzLoading]="loadingReportButton"
+            (click)="loadData()"
+    >
+      <i class="anticon anticon-profile">
+      </i>
+      Сформировать отчет
+    </button>
+  </div>
+</ng-template>
+
+<app-pa-extended-search [(show)]="paExtendedSearchShow"
+                        [selected-pa]="(parameters$ | async)?.pAccountWithPBudget"
+                        (selectPaOrganization)="selectPaOrganization($event)"
+                        (selectOrganization)="selectOrganization($event)"
+>
+</app-pa-extended-search>

@@ -1,0 +1,75 @@
+<div class="app-header">
+  <nz-tabset [nzTabBarExtraContent]="t_header__buttons"
+             [nzType]="'card'"
+             [nzSize]="'small'"
+             [nzSelectedIndex]="selectedTabIndex$ | async"
+  >
+    <nz-tab *ngFor="let mode of modes"
+            [nzTitle]="mode.title"
+            (nzSelect)="selectMode( mode.key )"
+    >
+    </nz-tab>
+  </nz-tabset>
+
+  <ng-template #t_header__buttons>
+    <div class="app-header__buttons">
+      <button nz-button
+              [nzType]="'default'"
+              (click)="exportTableToExcel()"
+              class="app-header__buttons_button"
+              [disabled]="disableButton$ | async"
+              [nzSize]="'small'"
+      >
+        <i class="anticon anticon-file-excel">
+        </i>
+        Экспорт в Excel
+      </button>
+
+      <nz-dropdown [nzTrigger]="'click'"
+                   [nzPlacement]="'bottomRight'"
+      >
+        <button nz-dropdown
+                nz-button
+                [nzType]="'default'"
+                [nzSize]="'small'"
+                nz-tooltip
+                [nzTitle]="'Показать информацию о ПО'"
+                class="app-header__buttons_button"
+        >
+          <i class="anticon anticon-info-circle-o">
+          </i>
+        </button>
+
+        <nz-list nz-menu
+                 nzBordered
+                 nzSize="small"
+        >
+          <nz-list-item *ngFor="let item of (systemInfo$ | async)">
+            <nz-list-item-meta [nzTitle]="item.title"
+                               [nzDescription]="item.value"
+            >
+            </nz-list-item-meta>
+          </nz-list-item>
+        </nz-list>
+      </nz-dropdown>
+
+      <button nz-button
+              nzType="default"
+              nzSize="small"
+              class="app-header__buttons_button"
+              nz-tooltip
+              [nzTitle]="t_settings_collapse_tooltip"
+              (click)="collapseSettings()"
+      >
+        <i class="anticon"
+           [class.anticon-menu-fold]="(settingsCollapse$ | async)"
+           [class.anticon-menu-unfold]=" !(settingsCollapse$ | async) "
+        >
+        </i>
+        <ng-template #t_settings_collapse_tooltip>
+          {{ (settingsCollapse$ | async) ? 'Показать настройки отчета':'Скрыть настройки отчета' }}
+        </ng-template>
+      </button>
+    </div>
+  </ng-template>
+</div>

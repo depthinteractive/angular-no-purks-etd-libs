@@ -1,0 +1,71 @@
+@cls-prefix: pa-extended-search;
+
+.@{cls-prefix} {
+  /deep/ .ant-modal-wrap& {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+
+    /deep/ & .ant-modal {
+      height: 91%;
+      min-height: 400px;
+      min-width: 728px;
+      top: 5%;
+      width: 80%;
+
+      &-content {
+        height: 100%;
+      }
+
+      &-body {
+        height: calc(100% - 108px);;
+        padding-bottom: 0;
+      }
+
+      &-footer {
+        bottom: 0;
+        position: absolute;
+        width: 100%;
+      }
+    }
+
+    /deep/ .ant-table-row {
+      cursor: pointer;
+    }
+  }
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  &__search {
+    flex: 0 0 40px;
+    margin-top: -12px;
+    margin-bottom: 8px;
+  }
+
+  &__head {
+    flex: 0 0 auto;
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+  }
+
+  &__footer {
+    height: 40px;
+    text-align: right;
+    padding: 8px 0;
+  }
+
+  /deep/ & table {
+    table-layout: fixed!important;
+
+    & tr._selected > td {
+      background: #e6f7ff;
+    }
+  }
+}

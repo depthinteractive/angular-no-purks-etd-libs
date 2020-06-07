@@ -1,0 +1,199 @@
+<div class="app-general-table">
+  <perfect-scrollbar #scroll
+                     [scrollIndicators]="true"
+                     (psScrollY)="tableScroll( )"
+                     (psScrollX)="tableScroll( )"
+  >
+    <nz-spin [nzSpinning]="(table$ | async).loading">
+      <div class="table-scroll"
+           [class._scrolled-left]="isScrolledLeft"
+           [class._scrolled-top]="isScrolledTop"
+           [ngStyle]="{width: table.options.nzScroll.x}"
+      >
+        <nz-table [class._empty]="tableIsEmpty"
+                  #documentTable
+                  nzBordered
+                  [nzData]="rows"
+                  [nzWidthConfig]="table.options.nzWidthConfig"
+                  [nzSize]="table.options.size"
+                  [nzShowPagination]="false"
+                  [nzFrontPagination]="false"
+                  [nzNoResult]="t_no_result"
+        >
+          <thead>
+          <tr *ngFor="let row of table.header; let rowIndex = index;">
+            <ng-container *ngFor="let col of row; let colIndex = index">
+              <th *ngIf="rowIndex === 0 && colIndex === 0"
+                  [attr.colspan]="1"
+                  [attr.rowspan]="table.header.length"
+                  [innerText]='col.title'
+                  class="_sticky-left _sticky-top"
+                  [ngStyle]="{top: scrollPositionY, left: scrollPositionX}"
+              >
+              </th>
+
+              <th *ngIf="!(rowIndex === 0 && colIndex === 0)"
+                  [attr.colspan]="col.prop['colspan']"
+                  [attr.rowspan]="col.prop['rowspan']"
+                  [attr.id]="'col-' + col.key"
+                  [innerText]='col.title'
+                  class="_sticky-top"
+                  [ngStyle]="{top: scrollPositionY}"
+              >
+              </th>
+            </ng-container>
+          </tr>
+          </thead>
+
+          <tbody *ngIf="!(table$ | async).loading">
+          <ng-container *ngFor="let row of documentTable.data">
+            <tr *ngIf="row.level === -1; else simpleRowTpl"
+                class="app-general-table__result-row"
+            >
+              <td class="_result-col _sticky-left"
+                  [nzIndentSize]="2"
+                  [ngStyle]="{left: scrollPositionX}"
+              >
+                <span>{{row | tableGroupName: [] : -1 : 'PA'}}</span>
+                <span>:&nbsp;</span>
+                <span>{{row | tableGroupValue : -1 : 'PA'}}</span>
+              </td>
+
+              <ng-container *ngFor="let col of table.data.model; let colIndex = index;">
+                <td *ngIf="col.visible && colIndex !== 0"
+                    [ngStyle]="{left: scrollPositionX}"
+                    class="_result-col _to-right"
+                >
+                  {{row[col.key] | transformTableValue: 'number'}}
+                </td>
+              </ng-container>
+            </tr>
+
+            <ng-template #simpleRowTpl>
+              <tr *ngIf="( row.parent && row.parent.expand ) || !( row.parent )"
+                  [class._can-select]="row.children.length == 0"
+              >
+                <td class="_expand-col _level-{{row.level}} _sticky-left"
+                    [nzShowExpand]="row.children && row.children.length > 0"
+                    [(nzExpand)]="row.expand"
+                    [ngStyle]="{
+                            'padding-left': (30 + row.level * 20) + 'px',
+                            left: scrollPositionX
+                          }"
+                    (nzExpandChange)="expandRowChange( row, $event )"
+                    (click)="openDetails(row, null, row.children.length === 0)"
+                >
+                  <div class="app-general-table__col-container">
+                    <ng-container *ngIf="mode !== 'letterOfCredit'; else letterOfCreditRowCellTpl">
+                      <span>{{row | tableGroupName: table.grouping: row.level: row.group}}</span>
+                      <span>:&nbsp;</span>
+                      <span *ngIf="!row.group.includes('subsidary_target'); else subsidaryTargetTooltip">
+                        {{row | tableGroupValue: row.level: row.group | transformTableValue : 'string' : '-'}}
+                      </span>
+
+                      <i *ngIf="row.group === 'Obligation' && !(row.Obligation | tableValueIsEmpty)"
+                         class="anticon anticon-file-text _can-select"
+                         nz-tooltip
+                         [nzTitle]="'Открыть документ-основание'"
+                         (click)="openObligationDocuments(row)"
+                      >
+                      </i>
+                    </ng-container>
+
+                    <ng-template #subsidaryTargetTooltip>
+                      <span nz-tooltip
+                            [nzTitle]="(row.subsidary_target || row.subsidary_target_enlarged) | subsidaryTargetTooltip : subsidaryTargets"
+                            class="app-general-table__abbr"
+                      >
+                        {{row | tableGroupValue: row.level: row.group}}
+                      </span>
+                    </ng-template>
+
+                    <ng-template #letterOfCreditRowCellTpl>
+                      <ng-container *ngIf="row.level === 0; else letterOfCreditInfo">
+                        <span>{{row.Obligation | transformTableValue: 'string':'-' }}</span>
+                        <i *ngIf="!(row.Obligation | tableValueIsEmpty)"
+                           class="anticon anticon-file-text _can-select"
+                           nz-tooltip
+                           [nzTitle]="'Открыть документ-основание'"
+                           (click)="openObligationDocuments(row)"
+                           style="margin: 0 8px;"
+                        >
+                        </i>
+
+                        <span>({{row.IGK | transformTableValue: 'string':'-'}})</span>
+                      </ng-container>
+
+                      <ng-template #letterOfCreditInfo>
+                            <span class="app-general-table__abbr"
+                                  nz-popover
+                                  [nzTitle]="'Сведения об аккредитиве'"
+                                  [nzMouseEnterDelay]=".5"
+                                  [nzContent]="t_table__koo_popover"
+                            >
+                              {{row.letterOfCreditNumber | transformTableValue: 'string':'-'}}
+                            </span>
+
+                        <ng-template #t_table__koo_popover>
+                          <div [ngStyle]="{'max-width': '500px'}">
+                            <p [ngStyle]="{'margin-bottom': '6px'}">
+                              <strong>Плательщик: </strong>{{row.letterOfCreditInfo?.payer | transformTableValue: 'string' :'-'}}
+                            </p>
+
+                            <p [ngStyle]="{'margin-bottom': '6px'}">
+                              <strong>Получатель: </strong>{{row.letterOfCreditInfo?.receiver | transformTableValue: 'string' :'-'}}
+                            </p>
+
+                            <p [ngStyle]="{'margin-bottom': '6px'}">
+                              <strong>Срок
+                                действия: </strong>{{row.letterOfCreditInfo?.duration | transformTableValue: 'string' :'-'}}
+                            </p>
+
+                            <p [ngStyle]="{'margin-bottom': '6px'}">
+                              <strong>Реквизиты
+                                документа-основания: </strong>{{row.letterOfCreditInfo?.details | transformTableValue: 'string' :'-'}}
+                            </p>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                    </ng-template>
+                  </div>
+                </td>
+
+                <ng-container *ngFor="let col of table.data.model; let colIndex = index;">
+                  <td *ngIf="col.visible && colIndex !== 0"
+                      class="_to-right"
+                      [ngStyle]="{left: scrollPositionX}"
+                      (click)="openDetails( row, col.relative || [col.key], row.children.length == 0 )"
+                  >
+                    {{row[col.key] | transformTableValue: 'number' | tableFilterValue: col.key: row.group : row}}
+                  </td>
+                </ng-container>
+              </tr>
+            </ng-template>
+          </ng-container>
+          </tbody>
+        </nz-table>
+
+      </div>
+    </nz-spin>
+  </perfect-scrollbar>
+</div>
+
+<div class="app-general-table-paging">
+  <nz-pagination [(nzPageIndex)]="table.paging.index"
+                 [(nzPageSize)]="table.paging.size"
+                 [nzPageSizeOptions]="[10,20,40,60,100]"
+                 [nzTotal]="table.data.rows ? table.data.rows.length : 0"
+                 [nzSize]="'small'"
+                 [nzShowSizeChanger]="true"
+                 (nzPageIndexChange)="pagingIndexChange( $event )"
+                 (nzPageSizeChange)="pagingSizeChange( $event )"
+  >
+  </nz-pagination>
+</div>
+
+<ng-template #t_no_result>
+  {{(noResult$ | async) || 'Выберите параметры и нажмите "Сформировать отчет"'}}
+</ng-template>
+

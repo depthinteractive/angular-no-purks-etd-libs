@@ -1,0 +1,28 @@
+.app-header {
+  &__logo {
+    background-image: url('/src/assets/images/logo.png');
+    background-position: 0 50%;
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+    display: inline-block;
+    float: left;
+    height: 40px;
+    width: 200px;
+  }
+
+  &__buttons {
+    display: block;
+    height: 48px;
+    line-height: 24px;
+    margin: 0 -4px;
+    padding: 8px 0 0;
+
+    &_button {
+      margin: 0 8px;
+    }
+  }
+
+  & /deep/ .ant-tabs.ant-tabs-card>.ant-tabs-bar .ant-tabs-tab {
+    margin-right: 4px;
+  }
+}
