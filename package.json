@@ -27,7 +27,7 @@
     "angular-draggable-droppable": "^4.0.2",
     "core-js": "^2.5.4",
     "file-saver": "^2.0.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "ng-zorro-antd": "^1.6.0",
     "ngx-drag-drop": "^1.1.0",
     "ngx-perfect-scrollbar": "^7.2.1",
